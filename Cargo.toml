@@ -1,5 +1,5 @@
 [workspace]
-members = ["PermanentDelegate"]
+members = ["PermanentDelegate", "default-account-state"]
 
 resolver = "2"
 
