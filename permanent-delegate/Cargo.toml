@@ -7,12 +7,6 @@ license.workspace = true
 
 [dependencies]
 spl-token-2022.workspace = true
-solana-program.workspace = true
-borsh.workspace = true
 spl-associated-token-account.workspace = true
-spl-transfer-hook-interface.workspace = true
-solana-transaction-status.workspace = true
 solana-client.workspace = true
 solana-sdk.workspace = true
-spl-token-metadata-interface.workspace = true
-spl-type-length-value.workspace = true
