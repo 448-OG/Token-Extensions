@@ -1,5 +1,9 @@
 [workspace]
-members = ["permanent-delegate", "default-account-state"]
+members = [
+    "permanent-delegate",
+    "default-account-state",
+    "interest-bearing-tokens",
+]
 
 resolver = "2"
 
@@ -23,3 +27,4 @@ spl-type-length-value = "0.5.0"
 solana-transaction-status = "2.0.2"
 solana-client = "2.0.2"
 solana-sdk = "2.0.2"
+solana-account-decoder = "2.0.3"
