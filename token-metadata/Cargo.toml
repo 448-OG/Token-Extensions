@@ -1,0 +1,15 @@
+[package]
+name = "token-metadata"
+authors.workspace = true
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+spl-token-2022.workspace = true
+spl-associated-token-account.workspace = true
+solana-client.workspace = true
+solana-sdk.workspace = true
+spl-token-metadata-interface.workspace = true
+spl-type-length-value.workspace = true

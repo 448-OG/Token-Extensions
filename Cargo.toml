@@ -2,7 +2,10 @@
 members = [
     "permanent-delegate",
     "default-account-state",
-    "interest-bearing-tokens", "non-transferable-token", "immutable-owner-extension",
+    "interest-bearing-tokens",
+    "non-transferable-token",
+    "immutable-owner-extension",
+    "token-metadata",
 ]
 
 resolver = "2"
