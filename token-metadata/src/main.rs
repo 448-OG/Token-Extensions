@@ -1,14 +1,17 @@
 use solana_client::rpc_client::RpcClient;
 use solana_sdk::{
-    commitment_config::CommitmentConfig, message::Message, native_token::LAMPORTS_PER_SOL,
-    pubkey::Pubkey, signature::Keypair, signer::Signer, system_instruction,
-    transaction::Transaction,
+    commitment_config::CommitmentConfig, native_token::LAMPORTS_PER_SOL, pubkey::Pubkey,
+    signature::Keypair, signer::Signer, system_instruction, transaction::Transaction,
 };
-use spl_token_2022::{extension::ExtensionType, state::Mint};
-use spl_token_metadata_interface::state::TokenMetadata;
+use spl_token_2022::{
+    extension::{
+        metadata_pointer::MetadataPointer, BaseStateWithExtensions, ExtensionType,
+        StateWithExtensions,
+    },
+    state::Mint,
+};
+use spl_token_metadata_interface::{instruction::remove_key, state::TokenMetadata};
 use spl_type_length_value::variable_len_pack::VariableLenPack;
-
-pub const INIT_BEFORE_UPDATE: &str = "Initializing...";
 
 fn main() {
     let mint_authority = Keypair::new();
@@ -26,10 +29,11 @@ fn main() {
         name: name.into(),
         symbol: symbol.into(),
         uri: uri.into(),
-        additional_metadata: vec![("membership".to_string(), INIT_BEFORE_UPDATE.into())],
         ..Default::default()
     };
     metadata.update_authority.0 = mint_authority.pubkey();
+
+    let max_additional_data_bytes = 48u64;
 
     // Size of MetadataExtension 2 bytes for type, 2 bytes for length
     let metadata_extension_len = 4usize;
@@ -42,7 +46,7 @@ fn main() {
         )
         .unwrap();
     // Ensure enough space can be allocated for the additional info
-    rent_for_extensions += rent_for_extensions - INIT_BEFORE_UPDATE.len() as u64;
+    rent_for_extensions += rent_for_extensions + max_additional_data_bytes;
 
     let create_account_instr = system_instruction::create_account(
         &mint_authority.pubkey(),
@@ -93,7 +97,8 @@ fn main() {
 
     check_request_airdrop(&client, &mint_authority.pubkey(), 2);
 
-    let message = Message::new(
+    let recent_blockhash = client.get_latest_blockhash().unwrap();
+    let tx = Transaction::new_signed_with_payer(
         &[
             create_account_instr,
             init_metadata_pointer_instr,
@@ -102,16 +107,53 @@ fn main() {
             update_metadata_pointer_instr,
         ],
         Some(&mint_authority.pubkey()),
+        &[&mint_authority, &mint_account],
+        recent_blockhash,
     );
-    let mut tx = Transaction::new_unsigned(message);
-    let recent_blockhash = client.get_latest_blockhash().unwrap();
-    tx.sign(&[&mint_authority, &mint_account], recent_blockhash);
     client
         .send_and_confirm_transaction_with_spinner_and_commitment(
             &tx,
             CommitmentConfig::finalized(),
         )
         .unwrap();
+
+    read_metadata(&client, &mint_account.pubkey());
+
+    // remove a key from metadata
+    let remove_key_instr = remove_key(
+        &spl_token_2022::id(),
+        &mint_account.pubkey(),
+        &mint_authority.pubkey(),
+        "membership".into(),
+        false,
+    );
+    let recent_blockhash = client.get_latest_blockhash().unwrap();
+    let tx = Transaction::new_signed_with_payer(
+        &[remove_key_instr],
+        Some(&mint_authority.pubkey()),
+        &[&mint_authority],
+        recent_blockhash,
+    );
+    client
+        .send_and_confirm_transaction_with_spinner_and_commitment(
+            &tx,
+            CommitmentConfig::finalized(),
+        )
+        .unwrap();
+    read_metadata(&client, &mint_account.pubkey())
+}
+
+fn read_metadata(client: &RpcClient, pubkey: &Pubkey) {
+    let mint_data = client.get_account_data(pubkey).unwrap();
+    let deser = StateWithExtensions::<Mint>::unpack(&mint_data).unwrap();
+    dbg!(&deser.base);
+    dbg!(&deser.get_extension_types());
+    dbg!(&deser.get_extension::<MetadataPointer>());
+
+    dbg!(
+        TokenMetadata::unpack_from_slice(&deser.get_extension_bytes::<TokenMetadata>().unwrap())
+            .unwrap()
+    );
 }
 
 fn check_request_airdrop(client: &RpcClient, account: &Pubkey, amount: u64) {
