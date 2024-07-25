@@ -1,5 +1,5 @@
 [package]
-name = "immutable-owner-extension"
+name = "immutable-owner"
 authors.workspace = true
 version.workspace = true
 edition.workspace = true
