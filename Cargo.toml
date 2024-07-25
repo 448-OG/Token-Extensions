@@ -5,7 +5,7 @@ members = [
     "interest-bearing-tokens",
     "non-transferable-token",
     "immutable-owner-extension",
-    "token-metadata", "transfer-fees",
+    "token-metadata", "transfer-fees", "reallocate-instruction",
 ]
 
 resolver = "2"
