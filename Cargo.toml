@@ -8,6 +8,7 @@ members = [
     "token-metadata",
     "transfer-fees",
     "reallocate-instruction",
+    "required-memo",
 ]
 
 resolver = "2"

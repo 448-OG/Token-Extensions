@@ -1,0 +1,15 @@
+[package]
+name = "required-memo"
+authors.workspace = true
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+spl-token-2022.workspace = true
+spl-associated-token-account.workspace = true
+solana-client.workspace = true
+solana-sdk.workspace = true
+spl-memo = "5.0.0"
+solana-transaction-status.workspace = true
