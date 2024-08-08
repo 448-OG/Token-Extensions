@@ -9,6 +9,8 @@ members = [
     "transfer-fees",
     "reallocate-instruction",
     "required-memo",
+    "transfer-hooks",
+    "transfer-hooks-program",
 ]
 
 resolver = "2"
@@ -34,3 +36,5 @@ solana-transaction-status = "2.0.2"
 solana-client = "2.0.2"
 solana-sdk = "2.0.2"
 solana-account-decoder = "2.0.3"
+spl-tlv-account-resolution = "0.7.0"
+spl-discriminator = "0.3.0"

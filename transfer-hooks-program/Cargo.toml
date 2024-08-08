@@ -1,0 +1,17 @@
+[package]
+name = "transfer-hooks-program"
+authors.workspace = true
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+borsh = { workspace = true, features = ["derive"] }
+solana-program.workspace = true
+spl-transfer-hook-interface.workspace = true
+spl-token-2022.workspace = true
+spl-tlv-account-resolution.workspace = true
